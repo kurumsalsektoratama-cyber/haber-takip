@@ -26,16 +26,26 @@ jobs:
         env:
           VERI_PAROLASI: ${{ secrets.VERI_PAROLASI }}
         run: |
+          $ErrorActionPreference = 'Stop'
           if (-not $env:VERI_PAROLASI) { throw 'VERI_PAROLASI gizli degiskeni tanimli degil.' }
           New-Item -ItemType Directory -Force -Path data | Out-Null
-          # Arsiv, sifreli halde "veri" dalinda duruyor. Ilk calismada yok.
+
+          # Arsiv, sifreli halde "veri" dalinda duruyor. Ilk calismada bu dal
+          # yoktur ve git fetch 1 dondurur - bu beklenen bir durum, hata degil.
           git fetch --depth=1 origin veri:refs/remotes/origin/veri 2>$null
-          if ($LASTEXITCODE -eq 0) {
+          $dalVar = ($LASTEXITCODE -eq 0)
+          # Basarisiz fetch'in biraktigi kodu temizle; yoksa adim sonunda
+          # PowerShell bu eski kodu gorup adimi basarisiz sayiyor.
+          $global:LASTEXITCODE = 0
+
+          if ($dalVar) {
             git checkout origin/veri -- data/haberler.enc
             ./Sifrele.ps1 -Coz -Giris data/haberler.enc -Cikis data/haberler.json
+            Write-Host 'Onceki arsiv alindi ve cozuldu.'
           } else {
             Write-Host 'Veri dali yok, sifirdan baslanacak.'
           }
+          exit 0
 
       - name: Haberleri tara
         shell: pwsh
