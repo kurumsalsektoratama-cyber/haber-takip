@@ -1,0 +1,107 @@
+name: Avrupa Kurumsal Bülten
+
+on:
+  schedule:
+    # Iki saatte bir. Depo herkese acik oldugu icin Actions dakikasi sinirsiz;
+    # siniri belirleyen tek sey Google'a cok sik istek gitmemesi.
+    - cron: '0 */2 * * *'
+  workflow_dispatch:          # "Run workflow" dugmesiyle elle de calistirilabilir
+
+# Ayni anda iki tarama calisip arsivi bozmasin
+concurrency:
+  group: haber-takip
+  cancel-in-progress: false
+
+jobs:
+  tarama:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v4
+
+      - name: Onceki arsivi al ve coz
+        shell: pwsh
+        env:
+          VERI_PAROLASI: ${{ secrets.VERI_PAROLASI }}
+        run: |
+          if (-not $env:VERI_PAROLASI) { throw 'VERI_PAROLASI gizli degiskeni tanimli degil.' }
+          New-Item -ItemType Directory -Force -Path data | Out-Null
+          # Arsiv, sifreli halde "veri" dalinda duruyor. Ilk calismada yok.
+          git fetch --depth=1 origin veri:refs/remotes/origin/veri 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            git checkout origin/veri -- data/haberler.enc
+            ./Sifrele.ps1 -Coz -Giris data/haberler.enc -Cikis data/haberler.json
+          } else {
+            Write-Host 'Veri dali yok, sifirdan baslanacak.'
+          }
+
+      - name: Haberleri tara
+        shell: pwsh
+        run: ./Tara.ps1 -Sessiz
+
+      - name: Haber metinlerini indir
+        shell: pwsh
+        continue-on-error: true    # icerik alinamazsa bile haberler kaydedilsin
+        run: ./Icerik.ps1 -Adet 120 -Sessiz
+
+      - name: Arsivi sifrele
+        shell: pwsh
+        env:
+          VERI_PAROLASI: ${{ secrets.VERI_PAROLASI }}
+        run: |
+          ./Sifrele.ps1 -Giris data/haberler.json -Cikis data/haberler.enc
+          # Kendi kendini dogrula: cozulemiyorsa yayinlamayalim
+          ./Sifrele.ps1 -Coz -Giris data/haberler.enc -Cikis data/dogrulama.json
+          $a = (Get-Item data/haberler.json).Length
+          $b = (Get-Item data/dogrulama.json).Length
+          if ($a -ne $b) { throw "Dogrulama basarisiz: $a bayt yerine $b bayt cozuldu." }
+          Remove-Item data/dogrulama.json
+          Write-Host 'Sifreleme dogrulandi.'
+
+      - name: Siteyi yayinla
+        run: |
+          if [ ! -f data/haberler.enc ]; then
+            echo "Sifreli veri yok, yayinlanacak bir sey yok."
+            exit 1
+          fi
+
+          rm -rf /tmp/site && mkdir -p /tmp/site/data
+          cp index.html manifest.json /tmp/site/
+          cp -r css js icons /tmp/site/
+          cp data/haberler.enc /tmp/site/data/
+
+          # index.html duz veriyi bu dosyadan okuyor; yayinda onun yerine
+          # "veri sifreli" isareti koyuyoruz ki uygulama kilit ekranini acsin.
+          echo 'window.HABER_SIFRELI = true;' > /tmp/site/data/haberler.js
+
+          # Kucucuk surum dosyasi: telefon once buna bakip 6 MB'lik veriyi
+          # gereksiz yere indirmiyor.
+          pwsh -Command '
+            $m = (Get-Content data/haberler.json -Raw | ConvertFrom-Json).meta
+            $j = @{ sonTarama = $m.sonTarama; toplam = $m.toplamHaber; okunabilir = $m.icerikliHaber } | ConvertTo-Json -Compress
+            Set-Content -Path /tmp/site/data/surum.json -Value $j'
+
+          # Jekyll islemesin, arama motorlari dizine eklemesin
+          touch /tmp/site/.nojekyll
+          printf 'User-agent: *\nDisallow: /\n' > /tmp/site/robots.txt
+
+          cd /tmp/site
+          git init -q -b veri
+          git config user.name  "haber-takip"
+          git config user.email "actions@github.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git add -A
+          git commit -q -m "Veri guncellendi $(date -u +'%Y-%m-%d %H:%M') UTC"
+          # Zorla gonderiyoruz: veri dalinda hep tek commit kalir, depo sismez
+          git push -f origin veri
+
+      - name: Calisma kaydini sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kayit-${{ github.run_number }}
+          path: data/log.txt
+          retention-days: 14
+          if-no-files-found: ignore

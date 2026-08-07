@@ -1,0 +1,16 @@
+# ONEMLI: haber arsivi sifresiz halde depoya GIRMEZ.
+# Depo herkese acik; arsiv yalnizca sifreli olarak (data/haberler.enc)
+# ve yalnizca "veri" dalinda yayinlanir.
+data/haberler.json
+data/haberler.js
+data/dogrulama.json
+data/takip_disi.txt
+
+# Calisma kaydi ve kilit dosyasi makineye ozel
+data/log.txt
+data/kilit
+
+# Windows / editor artiklari
+Thumbs.db
+desktop.ini
+*.tmp

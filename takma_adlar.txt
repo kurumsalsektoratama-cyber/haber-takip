@@ -1,0 +1,33 @@
+# Unvandan otomatik cikarilan marka adi yanlis ya da fazla genel oldugunda
+# burada duzeltilir.
+#
+#   UNVANIN BIR PARCASI | HABERLERDE ARANACAK AD
+#
+# Sol taraf musteri unvaninda geciyorsa, sag taraftaki ad aranir.
+# Birden fazla ad icin virgul kullan:  ORNEK SIRKET | Ornek, Ornek Holding
+# Satir basina bir kural. # ile baslayan satirlar yok sayilir.
+
+# --- markasi tek genel kelimeye dustugu icin elle kurtarilanlar ---
+MARKA MAGAZACILIK | Marka Mağazacılık
+DESTEK YATIRIM MENKUL | Destek Yatırım
+DUNYA KATILIM BANKASI | Dünya Katılım
+ISTANBUL ENERJI SANA | İstanbul Enerji Sanayi
+MEGA METAL | Mega Metal
+PAK IHRACAT | Pak İhracat
+VAKIF FINANSAL KIRALAMA | Vakıf Leasing, Vakıf Finansal Kiralama
+YENI MAGAZACILIK | A101, Yeni Mağazacılık
+
+# --- unvandan cikan ad yanlis olanlar ---
+TURKIYE PETROL RAFINERILERI | Tüpraş
+ISTANBUL SU VE KANAL | İSKİ
+ISPARK ISTANBUL | İSPARK
+HIDRO-D | Hidro-D Hidroelektrik
+ZENGIN PETROL | Zengin Petrol
+ERIS E-TICARET | Eriş E-Ticaret
+KAYI INSAAT | Kayı İnşaat
+GAP PAZARLAMA | Gap Pazarlama
+RAMA ELEKTRIK | Rama Elektrik
+3GEN TABAN | 3Gen Taban
+ABDULLAH TIVNIKLI ISAR VAKFI | İsar Vakfı, Tivnikli
+AL-MUZANI EXCHANGE | Al-Muzani Exchange
+ANDROMEDA TV | Andromeda TV

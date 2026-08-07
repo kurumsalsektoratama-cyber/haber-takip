@@ -1,0 +1,218 @@
+{
+  "_aciklama": "Bankaci gozuyle musteri takibi. 'konular' bir haberin neden onemli oldugunu belirler; hicbir konuya girmeyen haberler varsayilan olarak gizlenir. 'haric' listesindeki ifadeler basliktaysa haber hic alinmaz.",
+
+  "baslangicTarihi": "2026-08-01",
+  "sorguBeklemeMs": 800,
+  "arsivUstSinir": 40000,
+
+  "konular": [
+    {
+      "id": "satinalma",
+      "ad": "Satın alma / birleşme",
+      "renk": "#c8102e",
+      "kelimeler": [
+        "satın al", "satın aldı", "satın alıyor", "devral", "devraldı", "devir", "hisse devri",
+        "pay devri", "birleşme", "birleşiyor", "el değiştir", "bünyesine kat", "iktisap",
+        "hisselerini", "hissesini", "ortaklık kurdu", "ortak oldu", "azınlık payı", "çoğunluk hissesi",
+        "satışa çıkar", "satıldı", "satın alma anlaşması", "şirketi aldı", "yüzde hissesi"
+      ]
+    },
+    {
+      "id": "sozlesme",
+      "ad": "Anlaşma / sözleşme / ihale",
+      "renk": "#0057b8",
+      "kelimeler": [
+        "anlaşma", "anlaştı", "sözleşme", "mutabakat", "protokol", "imzalad", "imzaland",
+        "ihale", "ihaleyi kazandı", "iş birliği", "işbirliği", "güç birliği",
+        "distribütör", "bayilik", "franchise", "sipariş aldı", "kontrat", "mutabakat zaptı",
+        "stratejik ortaklık", "niyet mektubu"
+      ]
+    },
+    {
+      "id": "yatirim",
+      "ad": "Yatırım / tesis",
+      "renk": "#e8710a",
+      "kelimeler": [
+        "yatırım", "yatırımı", "fabrika", "tesis", "kapasite", "üretim hattı", "temel attı",
+        "temeli atıldı", "hizmete açtı", "açılışı", "genişleme", "ar-ge merkezi", "yeni tesis",
+        "milyon dolarlık yatırım", "milyar liralık yatırım", "üretime başladı", "santral",
+        "depo", "lojistik merkezi", "veri merkezi", "filosunu", "filosuna", "gemi siparişi",
+        "araç aldı", "makine aldı", "modernizasyon", "yenileme yatırımı", "hat açtı",
+        "sefer başlat", "şube açtı", "mağaza açtı"
+      ]
+    },
+    {
+      "id": "finansal",
+      "ad": "Finansal sonuç",
+      "renk": "#0a7d32",
+      "kelimeler": [
+        "net kâr", "net kar", "kârı", "karını açıkladı", "zarar", "bilanço", "ciro", "gelirleri",
+        "faaliyet kârı", "favök", "çeyrek sonuç", "çeyrek finansal", "hasılat", "kap'a bildir",
+        "finansal sonuçlar", "yıllık kâr", "gelir arttı", "satış geliri", "temettü", "kâr payı",
+        "bilanço açıkladı", "cirosu",
+        "kâr açıkla", "kar açıkla", "kâr etti", "kâra geçti", "kârlılı", "karlılı",
+        "dönem kârı", "kâr elde", "zarar açıkla", "zarara geçti", "finansal rapor",
+        "faaliyet raporu", "satışları arttı", "büyüme kaydetti", "rekor kâr"
+      ]
+    },
+    {
+      "id": "finansman",
+      "ad": "Finansman / kredi",
+      "renk": "#7b2ff7",
+      "kelimeler": [
+        "kredi aldı", "kredi kullan", "sendikasyon", "tahvil", "bono", "eurobond", "sukuk",
+        "kira sertifikası", "halka arz", "sermaye artırım", "borçlanma", "ihraç etti",
+        "yatırım turu", "fon sağladı", "refinansman", "yeniden yapılandır", "kredi anlaşması",
+        "finansman sağlad", "sermaye koydu", "değerleme", "ihraç belgesi", "ihraç tavan",
+        "para topladı", "fon topladı", "kaynak sağlad", "borç aldı", "kredi limiti"
+      ]
+    },
+    {
+      "id": "yonetim",
+      "ad": "Yönetim değişikliği",
+      "renk": "#1a73e8",
+      "kelimeler": [
+        "genel müdür", "ceo", "cfo", "coo", "cto", "yönetim kurulu", "icra kurulu",
+        "atandı", "atadı", "seçildi", "istifa", "görevden", "görevine getirildi",
+        "genel müdür yardımcısı", "murahhas", "başkanlığına", "yeni genel müdür", "koltuğuna"
+      ]
+    },
+    {
+      "id": "risk",
+      "ad": "Risk / hukuki",
+      "renk": "#b91c1c",
+      "kelimeler": [
+        "soruşturma", "dava", "ceza kesildi", "para cezası", "el konuldu", "kayyum", "iflas",
+        "konkordato", "haciz", "tazminat", "rekabet kurumu", "rekabet kurulu", "vergi cezası",
+        "mahkeme", "iddianame", "yaptırım", "ihtiyati tedbir", "borç yapılandır", "tedbir kararı",
+        "gözaltı", "tutuklan", "usulsüzlük", "zimmet", "kaçakçılık", "temerrüt", "icra takibi"
+      ]
+    },
+    {
+      "id": "disticaret",
+      "ad": "İhracat / yeni pazar",
+      "renk": "#00a3a3",
+      "kelimeler": [
+        "ihracat", "ihraç pazarı", "yeni pazar", "yurt dışı", "yurtdışı", "şube açtı",
+        "ülkesinde şirket", "global açılım", "avrupa pazarı", "abd pazarı", "körfez",
+        "ihracata başladı", "ilk ihracat", "uluslararası pazar"
+      ]
+    },
+    {
+      "id": "urun",
+      "ad": "Ürün / hizmet",
+      "renk": "#d81b60",
+      "kelimeler": [
+        "yeni ürün", "lansman", "tanıttı", "piyasaya sürdü", "üretmeye başladı", "yeni model",
+        "yeni marka", "yeni hizmet", "hizmete sundu", "patent", "sertifika aldı", "ödül aldı"
+      ]
+    },
+    {
+      "id": "istihdam",
+      "ad": "İstihdam / kapanma",
+      "renk": "#a16207",
+      "kelimeler": [
+        "işten çıkar", "işten çıkarıl", "istihdam", "personel alımı", "grev", "toplu sözleşme",
+        "fabrikayı kapat", "üretimi durdur", "kapatma kararı", "işçi alım", "işe alım",
+        "çalışan sayısı", "kadro"
+      ]
+    },
+    {
+      "id": "kamu",
+      "ad": "Regülasyon / kamu",
+      "renk": "#4b5563",
+      "kelimeler": [
+        "teşvik", "düzenleme", "bakanlık", "kurul kararı", "lisans", "gümrük vergisi",
+        "resmî gazete", "resmi gazete", "epdk", "spk", "bddk", "rekabet kurulu izni",
+        "yatırım teşvik", "kamu ihalesi", "imtiyaz", "ruhsat", "yaptırım kararı", "kota"
+      ]
+    },
+    {
+      "id": "olay",
+      "ad": "Kaza / afet / hasar",
+      "renk": "#ea580c",
+      "kelimeler": [
+        "yangın", "patlama", "iş kazası", "sel", "deprem hasar", "çöktü", "göçük",
+        "hasar gördü", "tahliye edildi", "zehirlenme", "can kaybı", "yaralandı",
+        "faaliyeti durdur", "üretim durdu", "siber saldırı", "veri ihlali", "hack"
+      ]
+    },
+    {
+      "id": "siralama",
+      "ad": "Sıralama / ödül",
+      "renk": "#65a30d",
+      "kelimeler": [
+        "zirvede", "zirveyi", "en büyük", "ilk 500", "ilk 100", "sıralamasında",
+        "listesinde", "devi", "lideri", "birinci oldu", "ödüle layık", "ödülünü aldı",
+        "en iyi", "marka değeri", "capital 500", "fortune"
+      ]
+    },
+    {
+      "id": "kap",
+      "ad": "KAP bildirimi",
+      "renk": "#78716c",
+      "kelimeler": [
+        "kap ***", "sorumluluk beyanı", "genel bilgi formu", "özel durum açıklama",
+        "pay alım", "geri alım", "genel kurul", "esas sözleşme", "sermaye piyasası kurulu"
+      ]
+    },
+    {
+      "id": "notlama",
+      "ad": "Kredi notu",
+      "renk": "#0891b2",
+      "kelimeler": [
+        "kredi notu", "derecelendirme", "moody", "fitch", "s&p", "not artır", "not indir",
+        "görünümünü", "rating", "jcr"
+      ]
+    }
+  ],
+
+  "haric": {
+    "_aciklama": "Bu ifadeler baslikta geciyorsa haber hic alinmaz - konu esleşse bile.",
+    "kelimeler": [
+      "fikstür", "maçı", "maçta", "maçında", "lige", "ligi", "ligde", "futbol",
+      "basketbol", "voleybol", "şampiyon", "teknik direktör", "derbi", "puan durumu",
+      "kupası", "taraftar", "hakem", "sakatlık", "milli takım", "transfer sezonu",
+      "devre arası", "antrenman", "süper lig", "playoff", "euroleague", "galibiyet",
+      "mağlubiyet", "penaltı", "gol krallığı", "kadrosuna kattı", "formasını",
+
+      "konser", "tiyatro", "festival", "sergisi", "albüm", "şarkı", "sinema",
+      "sanatçı", "sahnesinde", "gişe rekoru",
+
+      "burç", "astroloji", "çekiliş", "sevgilisi", "evlendi", "boşandı", "magazin",
+      "rüya tabiri", "kilo verdi", "aşk iddia", "menajer",
+
+      "katalog", "kataloğu", "aktüel ürün", "aldın aldın", "haftanın yıldızları",
+      "indirim afiş", "fırsatları", "indirimli ürünler", "raflarda", "reyonlarda",
+      "market fiyat", "ucuzladı", "zamlandı", "satışa sunuldu bugün",
+
+      "altın yorumları", "altın fiyatları", "gram altın", "çeyrek altın",
+      "dolar kuru", "euro kuru", "piyasa yorumu", "kur tahmini", "canlı borsa",
+      "su kesintisi", "sular ne zaman", "elektrik kesintisi", "kesinti yaşanacak",
+      "rekor tazeledi", "tl'yi gördü", "tavan yaptı", "hisseleri yükseldi",
+      "hisseleri düştü", "hisse fiyatı", "ne kadar yükseldi",
+
+      "emekli maaş", "emekliye", "emeklilere", "zam oranı", "asgari ücret", "promosyon",
+      "kaç tl", "kaç para", "ne kadar oldu", "sorgulama", "ödeme tarihleri", "başvuru ekranı",
+      "yattı mı", "ne zaman yatacak", "kredi hesaplama", "faiz oranları güncel",
+
+      "hava durumu", "trafiğe kapalı", "yağış", "sıcaklık", "namaz vakitleri", "iftar",
+      "günlük teknik analiz", "teknik analiz", "hisse yorum", "seans", "borsa bugün",
+      "canlı izle", "frekans", "şifresiz", "nasıl izlenir", "indirim kuponu", "kaçırmayın"
+    ]
+  },
+
+  "jenerik": {
+    "_aciklama": "Tek kelimelik marka bunlardan biriyse takibe alinmaz - gunluk dilde cok gectigi icin haberler alakasiz dolar. Kurtarmak istersen takma_adlar.txt kullan.",
+    "kelimeler": [
+      "MARKA", "OLAY", "TURKIYE", "AVRUPA", "DUNYA", "ANADOLU", "ISTANBUL", "ANKARA", "IZMIR", "BURSA",
+      "ZENGIN", "ERIS", "KAYI", "HIDRO", "GAP", "RAMA", "OFIS", "KARE", "DESTEK", "MUTLU",
+      "PANEL", "SOLAR", "VAKIF", "YAKIN", "MERKEZI", "GENEL", "YENI", "BUYUK", "GRUP",
+      "HOLDING", "GLOBAL", "STAR", "MEGA", "EURO", "TEK", "ORTA", "ILERI", "GUVEN",
+      "BIRLIK", "UMUT", "SEHIR", "KENT", "DOGU", "BATI", "KUZEY", "GUNEY", "ALFA", "BETA",
+      "DELTA", "NET", "PLUS", "PRO", "SMART", "ATLAS", "ULUSAL", "MILLI", "BASAK", "SEKER",
+      "GUNES", "DENIZ", "MARMARA", "EGE", "AKDENIZ", "KARADENIZ", "SAGLIK", "EGITIM",
+      "BEYAZ", "SIYAH", "ALTIN", "GUMUS", "CELIK", "DEMIR", "YILDIZ", "AY", "SU", "CAM"
+    ]
+  }
+}
