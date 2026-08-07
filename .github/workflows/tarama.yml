@@ -16,6 +16,8 @@ jobs:
   tarama:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    permissions:
+      contents: write     # sonucu "veri" dalina yazabilmek icin sart
 
     steps:
       - name: Depoyu al
