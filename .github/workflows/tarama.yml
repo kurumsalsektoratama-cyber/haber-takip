@@ -88,12 +88,9 @@ jobs:
           # "veri sifreli" isareti koyuyoruz ki uygulama kilit ekranini acsin.
           echo 'window.HABER_SIFRELI = true;' > /tmp/site/data/haberler.js
 
-          # Kucucuk surum dosyasi: telefon once buna bakip 6 MB'lik veriyi
-          # gereksiz yere indirmiyor.
-          pwsh -Command '
-            $m = (Get-Content data/haberler.json -Raw | ConvertFrom-Json).meta
-            $j = @{ sonTarama = $m.sonTarama; toplam = $m.toplamHaber; okunabilir = $m.icerikliHaber } | ConvertTo-Json -Compress
-            Set-Content -Path /tmp/site/data/surum.json -Value $j'
+          # Surum dosyasini betikler zaten uretiyor (Ortak.ps1 / VeriYaz),
+          # burada yalnizca kopyaliyoruz - bicim boylece her yerde ayni kaliyor.
+          cp data/surum.json /tmp/site/data/
 
           # Jekyll islemesin, arama motorlari dizine eklemesin
           touch /tmp/site/.nojekyll

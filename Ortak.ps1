@@ -178,6 +178,17 @@ function VeriYaz([string]$arsivYolu, [string]$webYolu, $liste, $konular, $muster
     $utf8 = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($arsivYolu, $govde, $utf8)
     [System.IO.File]::WriteAllText($webYolu, "window.HABER_VERISI = $govde;", $utf8)
+
+    # Kucucuk surum dosyasi: telefon once buna bakip veri degismediyse
+    # sifreli arsivi bastan indirmiyor. Degerler metaJson'dan aynen aliniyor;
+    # ConvertFrom-Json kullanilsa PS7 tarihi DateTime'a cevirip bicimi bozuyor.
+    $t = [regex]::Match($metaJson, '"sonTarama":"([^"]*)"')
+    $a = [regex]::Match($metaJson, '"toplamHaber":(\d+)')
+    $i = [regex]::Match($metaJson, '"icerikliHaber":(\d+)')
+    $surum = '{"sonTarama":"' + $t.Groups[1].Value + '"' +
+             ',"toplam":'     + $(if ($a.Success) { $a.Groups[1].Value } else { '0' }) +
+             ',"okunabilir":' + $(if ($i.Success) { $i.Groups[1].Value } else { '0' }) + '}'
+    [System.IO.File]::WriteAllText((Join-Path (Split-Path $webYolu -Parent) 'surum.json'), $surum, $utf8)
 }
 
 # Onceki yazimdan musteri listesini geri okur (Icerik.ps1 icin)

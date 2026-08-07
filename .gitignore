@@ -5,6 +5,7 @@ data/haberler.json
 data/haberler.js
 data/dogrulama.json
 data/takip_disi.txt
+data/surum.json
 
 # Calisma kaydi ve kilit dosyasi makineye ozel
 data/log.txt
