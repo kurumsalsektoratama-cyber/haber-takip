@@ -53,10 +53,39 @@ function JsonMetin([string]$s) {
     return '"' + $t + '"'
 }
 
+# Tarihi her ortamda ayni bicimde tutar.
+#
+# PowerShell 7 (GitHub sunucusu) ConvertFrom-Json sirasinda ISO gorunumlu
+# metinleri [datetime] nesnesine cevirir; geri yazarken sunucunun kultur
+# bicimi devreye girip "08/07/2026 21:06:07" gibi bir sey uretir, tarayici
+# bunu okuyamaz. PowerShell 5.1 bu donusumu yapmadigi icin sorun yerelde
+# hic gorunmez. Hem donusmus nesneyi hem bozulmus metni ISO'ya cekiyoruz.
+function TarihMetni($v) {
+    if ($null -eq $v) { return '' }
+    if ($v -is [datetime]) { return $v.ToString('yyyy-MM-ddTHH:mm:ss') }
+    $s = [string]$v
+    if (-not $s) { return '' }
+    if ($s -match '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}') { return $s }
+    # Bozulmus kayitlari kurtar: hangi kulturle yazildiysa onunla oku
+    $d = [datetime]::MinValue
+    foreach ($k in @([Globalization.CultureInfo]::GetCultureInfo('en-US'),
+                     [Globalization.CultureInfo]::InvariantCulture,
+                     [Globalization.CultureInfo]::CurrentCulture)) {
+        if ([datetime]::TryParse($s, $k, [Globalization.DateTimeStyles]::None, [ref]$d)) {
+            return $d.ToString('yyyy-MM-ddTHH:mm:ss')
+        }
+    }
+    return $s
+}
+
 # ConvertFrom-Json ile gelen nesnede olmayan alani sormak hata vermesin diye
 function Alan($nesne, [string]$ad) {
     if ($null -eq $nesne) { return '' }
-    if ($nesne.PSObject.Properties.Name -contains $ad) { return [string]$nesne.$ad }
+    if ($nesne.PSObject.Properties.Name -contains $ad) {
+        $v = $nesne.$ad
+        if ($v -is [datetime]) { return TarihMetni $v }
+        return [string]$v
+    }
     return ''
 }
 
@@ -109,7 +138,7 @@ function ArsivOku([string]$yol) {
     $eski = Get-Content $yol -Raw -Encoding UTF8 | ConvertFrom-Json
     foreach ($h in @($eski.haberler)) {
         $k = YeniHaber ([string]$h.id) ([string]$h.baslik) ([string]$h.link) ([string]$h.kaynak) `
-                       ([string]$h.tarih) ([string]$h.eklendi) @($h.gruplar) @($h.firmalar)
+                       (TarihMetni $h.tarih) (TarihMetni $h.eklendi) @($h.gruplar) @($h.firmalar)
         $k.gercekLink = Alan $h 'gercekLink'
         $k.gorsel     = Alan $h 'gorsel'
         $k.ozet       = Alan $h 'ozet'
