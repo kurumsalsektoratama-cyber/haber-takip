@@ -389,7 +389,7 @@
 
     var etiketHtml = h.gruplar.map(function (gid) {
       var g = grupHarita[gid];
-      return g ? '<span class="etiket grup" style="background:' + kacis(g.renk) + '">' + kacis(g.ad) + '</span>' : '';
+      return g ? '<span class="etiket grup" style="--konu:' + kacis(g.renk) + '">' + kacis(g.ad) + '</span>' : '';
     }).join('') + h.firmalar.map(function (f) {
       return '<span class="etiket" title="' + kacis(f) + '">' + kacis(kisaAd(f)) + '</span>';
     }).join('');
@@ -481,7 +481,9 @@
       var g = grupHarita[gid];
       if (!g) { return; }
       var e = document.createElement('button');
-      e.className = 'etiket grup'; e.style.background = g.renk; e.textContent = g.ad;
+      e.className = 'etiket grup';
+      e.style.setProperty('--konu', g.renk);
+      e.textContent = g.ad;
       e.addEventListener('click', function () { durum.grup = gid; durum.firma = ''; yenidenCiz(); });
       etiketler.appendChild(e);
     });
