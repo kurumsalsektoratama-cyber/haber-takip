@@ -726,6 +726,29 @@ body.kilitli { overflow: hidden; }
   .kapak-marka { width: 58px; height: 58px; font-size: 21px; }
 }
 
+/* Ana ekrandan uygulama olarak acildiginda icerik tam ekrana yayiliyor ve
+   telefonun saat/pil cubugunun altina giriyor. Bazi Android surumleri bu
+   durumda env(safe-area-inset-top) degerini 0 bildiriyor, dolayisiyla tek
+   basina ona guvenilemiyor. max() ile alt sinir koyuyoruz: cihaz gercek
+   degeri bildiriyorsa (iPhone centigi gibi) o kullanilir, bildirmiyorsa
+   24px devreye girer. Tarayici sekmesinde acildiginda bu kural calismaz,
+   orada gereksiz bosluk olusmaz. */
+@media all and (display-mode: standalone) {
+  .ust { padding-top: calc(10px + max(env(safe-area-inset-top), 24px)); }
+  .kilit-perde { padding-top: calc(24px + max(env(safe-area-inset-top), 24px)); }
+  .kapak-ic { top: calc(27% + max(env(safe-area-inset-top), 24px) / 2); }
+  .alt-nav { padding-bottom: calc(6px + max(env(safe-area-inset-bottom), 6px)); }
+  .yan { padding-bottom: calc(18px + max(env(safe-area-inset-bottom), 6px)); }
+}
+@media all and (display-mode: standalone) and (max-width: 620px) {
+  .okuyucu { --ok-ust: max(env(safe-area-inset-top), 24px); }
+}
+/* Tam ekran modunda da ayni durum gecerli */
+@media all and (display-mode: fullscreen) {
+  .ust { padding-top: calc(10px + max(env(safe-area-inset-top), 24px)); }
+  .okuyucu { --ok-ust: max(env(safe-area-inset-top), 24px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
