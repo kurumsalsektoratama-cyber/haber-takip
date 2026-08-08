@@ -45,12 +45,22 @@
   var grupHarita = {};
 
   var el = {};
-  ['ustOzet', 'arama', 'btnYenile', 'btnTema', 'btnFiltre', 'hizliMenu', 'grupMenu', 'firmaMenu',
-   'firmaArama', 'firmaGrupAdi', 'tarihSecim', 'siraSecim', 'sadeceOkunmamis', 'btnHepsiOkundu',
-   'btnDisaAktar', 'sinifsizGoster', 'zamanSerisi', 'filtreOzet', 'liste', 'dahaFazlaSarma'].forEach(function (k) {
+  ['ust', 'ustOzet', 'arama', 'aramaSatiri', 'btnAra', 'btnAramaKapat', 'btnYenile', 'btnTema',
+   'konuSerit', 'tarihSerit', 'siraSerit', 'hizliMenu', 'grupMenu', 'firmaMenu', 'firmaArama',
+   'firmaGrupAdi', 'sadeceOkunmamis', 'sinifsizGoster', 'btnHepsiOkundu', 'btnDisaAktar',
+   'zamanSerisi', 'filtreOzet', 'liste', 'dahaFazlaSarma', 'yanPanel', 'panelPerde',
+   'btnPanelKapat', 'altNav', 'navOkunmamis', 'btnYukari'].forEach(function (k) {
     el[k] = document.getElementById(k);
   });
-  var yanPanel = document.querySelector('.yan');
+  var yanPanel = el.yanPanel;
+
+  var TARIH_SECENEK = [
+    { d: 0,  ad: 'Tümü' }, { d: 1, ad: 'Bugün' }, { d: 2, ad: '2 gün' },
+    { d: 7,  ad: '7 gün' }, { d: 30, ad: '30 gün' }
+  ];
+  var SIRA_SECENEK = [
+    { d: 'yeni', ad: 'En yeni' }, { d: 'eski', ad: 'En eski' }, { d: 'kaynak', ad: 'Kaynak' }
+  ];
 
   // ------------------------------------------------------------ yardimcilar
   function kacis(s) {
@@ -166,6 +176,42 @@
 
   function yeniMi(h) { return oncekiZiyaret && h.eklendi > oncekiZiyaret; }
 
+  // ---------------------------------------------------------------- cipler
+  // Acilir liste yerine yatay kaydirilan etiketler; dokunmatikte cok daha rahat.
+  function cipYap(secili, etiket, sayi, renk, tiklama) {
+    var b = document.createElement('button');
+    b.className = 'cip' + (secili ? ' aktif' : '');
+    if (renk) {
+      var n = document.createElement('span');
+      n.className = 'nokta'; n.style.background = renk;
+      b.appendChild(n);
+    }
+    b.appendChild(document.createTextNode(etiket));
+    if (sayi !== '' && sayi !== undefined && sayi !== null) {
+      var s = document.createElement('span');
+      s.className = 'sayi'; s.textContent = sayi;
+      b.appendChild(s);
+    }
+    b.addEventListener('click', tiklama);
+    return b;
+  }
+
+  function panelAc(ac) {
+    if (!yanPanel) { return; }
+    yanPanel.classList.toggle('acik', ac);
+    el.panelPerde.classList.toggle('acik', ac);
+    document.body.classList.toggle('kilitli', ac && window.innerWidth <= 1000);
+  }
+
+  function altNavIsaretle() {
+    if (!el.altNav) { return; }
+    var d = el.altNav.querySelectorAll('button');
+    for (var i = 0; i < d.length; i++) {
+      var g = d[i].getAttribute('data-gorunum');
+      d[i].classList.toggle('aktif', !!g && g === durum.gorunum);
+    }
+  }
+
   // ------------------------------------------------------------ ciz: menuler
   function menuDugmesi(secili, etiket, adet, renk, tiklama, rozet) {
     var b = document.createElement('button');
@@ -186,7 +232,7 @@
     b.addEventListener('click', function () {
       tiklama();
       // Telefonda secim yapinca panel kapansin, sonuc gorunsun
-      if (window.innerWidth <= 980) { yanPanel.classList.remove('acik'); }
+      if (window.innerWidth <= 1000) { panelAc(false); }
     });
     return b;
   }
@@ -222,7 +268,7 @@
         function () { durum.gorunum = 'siniflandirilmamis'; yenidenCiz(); }));
     }
 
-    // konu menusu
+    // konu menusu (yan panel)
     el.grupMenu.innerHTML = '';
     el.grupMenu.appendChild(menuDugmesi(durum.grup === 'tumu', 'Tüm konular', anaSayi, '#9aa3b0',
       function () { durum.grup = 'tumu'; yenidenCiz(); }));
@@ -230,6 +276,35 @@
       el.grupMenu.appendChild(menuDugmesi(durum.grup === g.id, g.ad, grupSayac[g.id] || 0, g.renk,
         function () { durum.grup = g.id; yenidenCiz(); }));
     });
+
+    // konu seridi (ust bar) - sadece haberi olan konular, coktan aza
+    el.konuSerit.innerHTML = '';
+    el.konuSerit.appendChild(cipYap(durum.grup === 'tumu', 'Tümü', anaSayi, '',
+      function () { durum.grup = 'tumu'; yenidenCiz(); }));
+    veri.gruplar.slice()
+      .filter(function (g) { return grupSayac[g.id] || durum.grup === g.id; })
+      .sort(function (a, b) { return (grupSayac[b.id] || 0) - (grupSayac[a.id] || 0); })
+      .forEach(function (g) {
+        el.konuSerit.appendChild(cipYap(durum.grup === g.id, g.ad, grupSayac[g.id] || 0, g.renk,
+          function () { durum.grup = g.id; yenidenCiz(); }));
+      });
+
+    // zaman araligi ve siralama secimleri
+    el.tarihSerit.innerHTML = '';
+    TARIH_SECENEK.forEach(function (t) {
+      el.tarihSerit.appendChild(cipYap(!durum.tekGun && durum.gun === t.d, t.ad, '', '',
+        function () { durum.gun = t.d; durum.tekGun = ''; yenidenCiz(); }));
+    });
+    el.siraSerit.innerHTML = '';
+    SIRA_SECENEK.forEach(function (s) {
+      el.siraSerit.appendChild(cipYap(durum.sira === s.d, s.ad, '', '',
+        function () { durum.sira = s.d; yenidenCiz(); }));
+    });
+
+    if (el.navOkunmamis) {
+      el.navOkunmamis.textContent = okunmamisSayi > 0 ? (okunmamisSayi > 99 ? '99+' : okunmamisSayi) : '';
+    }
+    altNavIsaretle();
 
     // musteri menusu - haberi olanlar once, sonra digerleri
     el.firmaGrupAdi.textContent = '(' + (veri.musteriler || []).length + ')';
@@ -438,10 +513,20 @@
     var kart = document.createElement('article');
     kart.className = 'kart' + (okunan[h.id] ? ' okundu' : '');
 
-    var serit = document.createElement('div');
-    serit.className = 'kart-serit';
-    serit.style.background = grup ? grup.renk : 'var(--kenar)';
-    kart.appendChild(serit);
+    var govde = document.createElement('div');
+    govde.className = 'kart-govde';
+
+    if (h.gorsel) {
+      var sarma = document.createElement('div');
+      sarma.className = 'kart-gorsel-sarma';
+      var gorsel = document.createElement('img');
+      gorsel.className = 'kart-gorsel';
+      gorsel.src = h.gorsel; gorsel.alt = ''; gorsel.loading = 'lazy';
+      gorsel.addEventListener('error', function () { sarma.remove(); });
+      gorsel.addEventListener('click', function () { okuyucuAc(h); });
+      sarma.appendChild(gorsel);
+      govde.appendChild(sarma);
+    }
 
     var icerik = document.createElement('div');
     icerik.className = 'kart-icerik';
@@ -459,6 +544,35 @@
       yr.className = 'yeni-rozet'; yr.textContent = 'YENİ';
       ust.appendChild(yr);
     }
+
+    // Islem dugmeleri meta satirinin sagina - kartin yanindaki dikey
+    // sutun yerine burada durunca kart daha sade gorunuyor.
+    var islem = document.createElement('div');
+    islem.className = 'kart-islem';
+
+    var kaydet = document.createElement('button');
+    kaydet.className = 'ikon' + (kayitli[h.id] ? ' acik' : '');
+    kaydet.textContent = kayitli[h.id] ? '★' : '☆';
+    kaydet.title = kayitli[h.id] ? 'Kayıttan çıkar' : 'Kaydet';
+    kaydet.addEventListener('click', function () {
+      if (kayitli[h.id]) { delete kayitli[h.id]; } else { kayitli[h.id] = 1; }
+      D.yaz('kayitli', kayitli);
+      yenidenCiz(true);
+    });
+    islem.appendChild(kaydet);
+
+    var okundu = document.createElement('button');
+    okundu.className = 'ikon' + (okunan[h.id] ? ' acik' : '');
+    okundu.textContent = okunan[h.id] ? '↺' : '✓';
+    okundu.title = okunan[h.id] ? 'Okunmadı işaretle' : 'Okundu işaretle';
+    okundu.addEventListener('click', function () {
+      if (okunan[h.id]) { delete okunan[h.id]; } else { okunan[h.id] = 1; }
+      D.yaz('okunan', okunan);
+      yenidenCiz(true);
+    });
+    islem.appendChild(okundu);
+    ust.appendChild(islem);
+
     icerik.appendChild(ust);
 
     var h3 = document.createElement('h3');
@@ -494,52 +608,8 @@
       etiketler.appendChild(e);
     });
     icerik.appendChild(etiketler);
-    kart.appendChild(icerik);
-
-    if (h.gorsel) {
-      var kucukGorsel = document.createElement('img');
-      kucukGorsel.className = 'kart-gorsel';
-      kucukGorsel.src = h.gorsel;
-      kucukGorsel.alt = '';
-      kucukGorsel.loading = 'lazy';
-      kucukGorsel.addEventListener('error', function () { kucukGorsel.remove(); });
-      kucukGorsel.addEventListener('click', function () { okuyucuAc(h); });
-      kart.appendChild(kucukGorsel);
-    }
-
-    var islem = document.createElement('div');
-    islem.className = 'kart-islem';
-
-    var oku = document.createElement('button');
-    oku.className = 'ikon';
-    oku.textContent = '⤢';
-    oku.title = 'Uygulamada oku';
-    oku.addEventListener('click', function () { okuyucuAc(h); });
-    islem.appendChild(oku);
-
-    var kaydet = document.createElement('button');
-    kaydet.className = 'ikon' + (kayitli[h.id] ? ' acik' : '');
-    kaydet.textContent = '★';
-    kaydet.title = kayitli[h.id] ? 'Kayıttan çıkar' : 'Kaydet';
-    kaydet.addEventListener('click', function () {
-      if (kayitli[h.id]) { delete kayitli[h.id]; } else { kayitli[h.id] = 1; }
-      D.yaz('kayitli', kayitli);
-      yenidenCiz();
-    });
-    islem.appendChild(kaydet);
-
-    var okundu = document.createElement('button');
-    okundu.className = 'ikon' + (okunan[h.id] ? ' acik' : '');
-    okundu.textContent = okunan[h.id] ? '↺' : '✓';
-    okundu.title = okunan[h.id] ? 'Okunmadı işaretle' : 'Okundu işaretle';
-    okundu.addEventListener('click', function () {
-      if (okunan[h.id]) { delete okunan[h.id]; } else { okunan[h.id] = 1; }
-      D.yaz('okunan', okunan);
-      yenidenCiz();
-    });
-    islem.appendChild(okundu);
-
-    kart.appendChild(islem);
+    govde.appendChild(icerik);
+    kart.appendChild(govde);
     return kart;
   }
 
@@ -564,7 +634,7 @@
 
     var gosterilecek = liste.slice(0, durum.limit);
     var sonGun = '';
-    gosterilecek.forEach(function (h) {
+    gosterilecek.forEach(function (h, i) {
       var g = gunAnahtari(tarihNesnesi(h.tarih));
       if (g !== sonGun) {
         sonGun = g;
@@ -573,7 +643,13 @@
         b.textContent = gunEtiketi(g);
         el.liste.appendChild(b);
       }
-      el.liste.appendChild(kartOlustur(h));
+      var kart = kartOlustur(h);
+      // Ilk gorselli haber tam genislikte - akisa ritim katiyor
+      if (i === 0 && h.gorsel) { kart.classList.add('one-cikan'); }
+      // Kartlar sirayla belirsin; sadece ilk ekranda, kaydirirken gecikme olmasin
+      if (i < 8) { kart.style.animationDelay = (i * 45) + 'ms'; }
+      else { kart.style.animation = 'none'; }
+      el.liste.appendChild(kart);
     });
 
     if (liste.length > durum.limit) {
@@ -650,13 +726,13 @@
       veriyiBagla();
       yenidenCiz();
       s.parentNode.removeChild(s);
-      if (!sessiz) { el.btnYenile.textContent = 'Yenile'; }
+      if (!sessiz) { el.btnYenile.classList.remove('doner'); }
     };
     s.onerror = function () {
-      if (!sessiz) { el.btnYenile.textContent = 'Yenile'; }
+      if (!sessiz) { el.btnYenile.classList.remove('doner'); }
       s.parentNode.removeChild(s);
     };
-    if (!sessiz) { el.btnYenile.textContent = 'Yükleniyor…'; }
+    if (!sessiz) { el.btnYenile.classList.add('doner'); }
     document.body.appendChild(s);
   }
 
@@ -687,12 +763,6 @@
     aramaZaman = setTimeout(function () { durum.arama = el.arama.value; yenidenCiz(); }, 180);
   });
   el.firmaArama.addEventListener('input', function () { menuleriCiz(); });
-  el.tarihSecim.addEventListener('change', function () {
-    durum.gun = parseInt(el.tarihSecim.value, 10) || 0;
-    durum.tekGun = '';
-    yenidenCiz();
-  });
-  el.siraSecim.addEventListener('change', function () { durum.sira = el.siraSecim.value; yenidenCiz(); });
   el.sadeceOkunmamis.addEventListener('change', function () {
     durum.sadeceOkunmamis = el.sadeceOkunmamis.checked; yenidenCiz();
   });
@@ -702,11 +772,43 @@
     yenidenCiz();
   });
   el.btnYenile.addEventListener('click', function () { veriyiTazele(false); });
-  el.btnFiltre.addEventListener('click', function () { yanPanel.classList.toggle('acik'); });
   el.btnTema.addEventListener('click', function () {
     document.body.classList.toggle('koyu');
     D.yaz('tema', document.body.classList.contains('koyu') ? 'koyu' : 'acik');
   });
+
+  // arama satiri: buyutecle acilir, vazgecince temizlenir
+  el.btnAra.addEventListener('click', function () {
+    var acik = el.aramaSatiri.classList.toggle('acik');
+    if (acik) { el.arama.focus(); }
+  });
+  el.btnAramaKapat.addEventListener('click', function () {
+    el.aramaSatiri.classList.remove('acik');
+    if (el.arama.value) { el.arama.value = ''; durum.arama = ''; yenidenCiz(); }
+  });
+
+  // alt sekme cubugu
+  if (el.altNav) {
+    el.altNav.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) { return; }
+      if (b.getAttribute('data-rol') === 'filtre') {
+        panelAc(!yanPanel.classList.contains('acik'));
+        return;
+      }
+      var g = b.getAttribute('data-gorunum');
+      if (g) { durum.gorunum = g; panelAc(false); yenidenCiz(); pencereBasa(); }
+    });
+  }
+  el.panelPerde.addEventListener('click', function () { panelAc(false); });
+  el.btnPanelKapat.addEventListener('click', function () { panelAc(false); });
+
+  // basa don dugmesi
+  function pencereBasa() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  el.btnYukari.addEventListener('click', pencereBasa);
+  window.addEventListener('scroll', function () {
+    el.btnYukari.classList.toggle('gorunur', window.scrollY > 700);
+  }, { passive: true });
   el.btnHepsiOkundu.addEventListener('click', function () {
     var liste = suzulmus();
     if (!liste.length) { return; }
