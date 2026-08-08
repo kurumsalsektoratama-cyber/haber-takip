@@ -856,29 +856,50 @@
   }
 
   // Anahtar uretimi 600 bin turluk bir hesap; telefonda 1-2 saniye surer.
-  // Tuz degismedigi surece sonucu saklayip tekrar tekrar hesaplamiyoruz.
-  function anahtarUret(parola, tuz, tur) {
+  // Tuz degismedigi surece sonucu saklayip her seferinde hesaplamiyoruz.
+  //
+  // ONEMLI: anahtar ancak COZME BASARILI OLDUKTAN SONRA saklaniyor. Onceden
+  // once saklayip sonra deniyordu; bir kez yanlis parola girilince bozuk
+  // anahtar onbellekte kaliyor ve sonraki acilislarda dogru parola bile
+  // reddediliyordu. Onbellekteki anahtar tutmazsa paroladan yeniden uretilir.
+  function anahtarCoz(parola, paket) {
+    var tuz = b64Bayt(paket.salt), iv = b64Bayt(paket.iv), govde = b64Bayt(paket.ct);
+    var tuzB64 = bayt64(tuz);
     var saklanan = D.oku('anahtar', null);
-    if (saklanan && saklanan.tuz === bayt64(tuz)) {
-      return crypto.subtle.importKey('raw', b64Bayt(saklanan.k), { name: 'AES-GCM' }, false, ['decrypt']);
+
+    function dene(hamAnahtar) {
+      return crypto.subtle.importKey('raw', hamAnahtar, { name: 'AES-GCM' }, false, ['decrypt'])
+        .then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, k, govde); })
+        .then(function (duz) { return { duz: duz, ham: hamAnahtar }; });
     }
-    return crypto.subtle.importKey('raw', new TextEncoder().encode(parola), 'PBKDF2', false, ['deriveBits'])
-      .then(function (temel) {
-        return crypto.subtle.deriveBits(
-          { name: 'PBKDF2', salt: tuz, iterations: tur, hash: 'SHA-256' }, temel, 256);
-      })
-      .then(function (ham) {
-        D.yaz('anahtar', { tuz: bayt64(tuz), k: bayt64(ham) });
-        return crypto.subtle.importKey('raw', ham, { name: 'AES-GCM' }, false, ['decrypt']);
+
+    function turet() {
+      return crypto.subtle.importKey('raw', new TextEncoder().encode(parola), 'PBKDF2', false, ['deriveBits'])
+        .then(function (temel) {
+          return crypto.subtle.deriveBits(
+            { name: 'PBKDF2', salt: tuz, iterations: paket.it, hash: 'SHA-256' }, temel, 256);
+        })
+        .then(dene);
+    }
+
+    var zincir;
+    if (saklanan && saklanan.tuz === tuzB64) {
+      zincir = dene(b64Bayt(saklanan.k)).catch(function () {
+        localStorage.removeItem('ht.anahtar');
+        return turet();
       });
+    } else {
+      zincir = turet();
+    }
+
+    return zincir.then(function (s) {
+      D.yaz('anahtar', { tuz: tuzB64, k: bayt64(s.ham) });
+      return s.duz;
+    });
   }
 
   function paketiCoz(paket, parola) {
-    var tuz = b64Bayt(paket.salt), iv = b64Bayt(paket.iv), govde = b64Bayt(paket.ct);
-    return anahtarUret(parola, tuz, paket.it)
-      .then(function (anahtar) {
-        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, anahtar, govde);
-      })
+    return anahtarCoz(parola, paket)
       .then(function (kucuk) {
         // Veri sifrelenmeden once gzip ile sikistirilmisti
         var akis = new Blob([kucuk]).stream().pipeThrough(new DecompressionStream('gzip'));

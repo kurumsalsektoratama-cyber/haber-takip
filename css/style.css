@@ -79,13 +79,18 @@ button { font-family: inherit; }
 :focus-visible { outline: 2px solid var(--vurgu); outline-offset: 2px; border-radius: 8px; }
 
 /* ============================================================== ust bar */
+/* env(safe-area-inset-*): telefonun saat/pil cubugu ve alttaki gezinme
+   cizgisi icerigin ustune binmesin. Centikli ekranlarda deger dolu gelir,
+   duz ekranlarda 0 olur. */
 .ust {
   position: sticky; top: 0; z-index: 40;
   background: var(--cam);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   border-bottom: 1px solid var(--kenar);
-  padding: 10px 16px 0;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 0;
+  padding-left: calc(16px + env(safe-area-inset-left));
+  padding-right: calc(16px + env(safe-area-inset-right));
 }
 .ust-sira {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -511,6 +516,7 @@ body.kilitli { overflow: hidden; }
   position: sticky; top: 0; z-index: 2;
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 13px 18px;
+  padding-top: calc(13px + var(--ok-ust, 0px));
   background: var(--cam);
   backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--kenar);
@@ -559,7 +565,8 @@ body.kilitli { overflow: hidden; }
   width: 100%; min-width: 780px; height: 60%; opacity: .55;
 }
 .kapak-ic {
-  position: absolute; left: 0; right: 0; top: 27%; text-align: center; padding: 0 24px;
+  position: absolute; left: 0; right: 0; top: 27%; text-align: center;
+  padding: 0 calc(24px + env(safe-area-inset-left)) 0 calc(24px + env(safe-area-inset-right));
   animation: kapakGir .8s var(--yay) both;
 }
 @keyframes kapakGir { from { opacity: 0; transform: translateY(14px); } }
@@ -584,7 +591,8 @@ body.kilitli { overflow: hidden; }
 .kilit-perde {
   position: fixed; inset: 0; z-index: 90;
   background: var(--zemin);
-  display: flex; align-items: center; justify-content: center; padding: 24px;
+  display: flex; align-items: center; justify-content: center;
+  padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
 }
 .kilit {
   width: 100%; max-width: 360px; text-align: center;
@@ -619,7 +627,7 @@ body.kilitli { overflow: hidden; }
 
 /* ========================================================== dar ekranlar */
 @media (max-width: 1000px) {
-  .govde { padding: 16px 14px 110px; }
+  .govde { padding: 16px calc(14px + env(safe-area-inset-right)) 110px calc(14px + env(safe-area-inset-left)); }
 
   /* Yan panel alttan acilan sayfaya donusuyor */
   .yan {
@@ -708,7 +716,7 @@ body.kilitli { overflow: hidden; }
   .etiket { max-width: 160px; }
 
   .okuyucu-perde { padding: 0; }
-  .okuyucu { max-height: 100vh; border-radius: 0; }
+  .okuyucu { max-height: 100vh; border-radius: 0; --ok-ust: env(safe-area-inset-top); }
   .okuyucu-govde { padding: 20px 20px 30px; }
   .ok-baslik { font-size: 24px; }
   .ok-metin { font-size: 16.5px; }
